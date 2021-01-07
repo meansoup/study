@@ -87,5 +87,63 @@ no arg when 을 사용할 때도 있다.
 - 성능상 이점을 얻기 위할 때 사용할 수 있다.
 - no arg이기 때문에 extra objects를 생성하지 않는다는 장점이 있다.
 
+## is
 
-...
+`is`는 java의 `instanceof`와 유사하다.  
+instanceof 체크하고 type casting을 해야하는 java와 달리 is는 compiler가 `smart cast`를 해준다. (더 강력하고 편리하다)  
+- smart cast를 위해서 property가 `val`이어야 하고, custom accessor를 가질 수 없다. 그렇지 않으면 property에 대한 access가 동일한 값을 주는지에 대해 보장할 수 없다.
+- 명시적 type cast는 `as`를 이용한다.
+
+## block value
+
+`if`나 `when`의 branch에 block을 가질 수 있다.
+block이 있으면, block의 가장 마지막 expression이 block의 result가 된다.
+- if나 when은 kotlin에서 expression이고 반환 값을 갖는다는 점을 상기하자.
+
+```kotlin
+fun evalWithLogging(e: Expr): Int =
+    when (e) {
+        is Sum -> {
+            val left = evalWithLogging(e.left)
+            val right = evalWithLogging(e.right)
+            println("sum: $left + $right")
+
+            left + right // return value
+        }
+    }
+```
+
+## loop
+
+java의 for loop과 완전히 매칭되는 for loop은 없다.
+- while은 java랑 완전히 같음.
+
+그래서 range, progression을 사용한다.  
+range는 1..10 처럼 사용될 수 있고, 이런 range를 progression이라고 한다.  
+- range는 char에도 된다. ('A'..'F', '0'..'9')
+
+또, `downTo`, `step`, `until`을 제공하는데 직관적이다.  
+```kotlin
+for (i in 1..10)
+for (i in 100 downTo 1 step 2)
+for (i in 0 until size)
+```
+
+## exception
+
+exception은 java와 유사하다.  
+try, catch, finally도 java와 유사하다.  
+
+java와 다른 점은 kotlin의 throw, try도 expression이다.  
+- try는 if와 다르게 `{}` body를 항상 가져야 한다.  
+```kotlin
+val number = try {
+        Integer.parseInt(reader.readLine())
+    } catch (e: NumberFormatException) {
+        return
+    }
+```
+
+또 다른 점은 kotlin은 함수에 `throws`를 명시하지 않아도 된다.
+- java와 다르게  `checked exception`과 `unchecked exception`을 구분하지 않는다는 것.
+- 경험 상 `checked exception`에서 rethrow나 ignore exception 같은 처리들이 불필요하게 수행되는 경우가 많아 구분을 하지 않는 설계를 했다고 한다.
